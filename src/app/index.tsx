@@ -2,34 +2,13 @@ import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { stands } from "../data/stands";
 
 export default function HomeScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null,
   );
   const [selectedStand, setSelectedStand] = useState<string | null>(null);
-  const stands = [
-    {
-      id: "sample-produce-stand",
-      name: "Sample Produce Stand",
-      category: "Produce",
-      description: "Fresh roadside produce nearby",
-      coordinates: {
-        latitude: (location?.coords.latitude ?? 44.9778) + 0.002,
-        longitude: (location?.coords.longitude ?? -93.265) + 0.002,
-      },
-    },
-    {
-      id: "sample-egg-stand",
-      name: "Sample Egg Stand",
-      category: "Eggs",
-      description: "Fresh local eggs",
-      coordinates: {
-        latitude: (location?.coords.latitude ?? 44.9778) - 0.002,
-        longitude: (location?.coords.longitude ?? -93.265) - 0.002,
-      },
-    },
-  ];
 
   const selectedStandData = stands.find((stand) => stand.id === selectedStand);
   useEffect(() => {
@@ -57,7 +36,14 @@ export default function HomeScreen() {
         }}
         markers={stands.map((stand) => ({
           id: stand.id,
-          coordinates: stand.coordinates,
+          coordinates: {
+            latitude:
+              (location?.coords.latitude ?? 44.9778) +
+              stand.coordinates.latitudeOffset,
+            longitude:
+              (location?.coords.longitude ?? -93.265) +
+              stand.coordinates.longitudeOffset,
+          },
           title: stand.name,
         }))}
         onMarkerClick={(marker) => {
