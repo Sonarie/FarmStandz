@@ -19,6 +19,16 @@ export default function HomeScreen() {
         longitude: (location?.coords.longitude ?? -93.265) + 0.002,
       },
     },
+    {
+      id: "sample-egg-stand",
+      name: "Sample Egg Stand",
+      category: "Eggs",
+      description: "Fresh local eggs",
+      coordinates: {
+        latitude: (location?.coords.latitude ?? 44.9778) - 0.002,
+        longitude: (location?.coords.longitude ?? -93.265) - 0.002,
+      },
+    },
   ];
 
   const selectedStandData = stands.find((stand) => stand.id === selectedStand);
