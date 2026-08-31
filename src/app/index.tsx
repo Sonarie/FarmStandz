@@ -1,7 +1,20 @@
+import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null,
+  );
+  useEffect(() => {
+    async function checkLocation() {
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+    }
+
+    checkLocation();
+  }, []);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Roadside Standz</Text>
@@ -12,8 +25,8 @@ export default function HomeScreen() {
         style={styles.map}
         cameraPosition={{
           coordinates: {
-            latitude: 44.9778,
-            longitude: -93.265,
+            latitude: location?.coords.latitude ?? 44.9778,
+            longitude: location?.coords.longitude ?? -93.265,
           },
           zoom: 10,
         }}
@@ -27,6 +40,9 @@ export default function HomeScreen() {
             title: "Test Farm Stand",
           },
         ]}
+        properties={{
+          isMyLocationEnabled: true,
+        }}
       />
     </View>
   );
