@@ -11,6 +11,12 @@
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.sonarie.farmstandz",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBm8yIN_NtR4bJrILklLg1rfFjCODzejXc"
+        }
+      },
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -32,11 +38,24 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-maps",
+        {
+          "requestLocationPermission": true,
+          "locationPermission": "Allow Roadside Standz to use your location"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "28777aae-aaa8-4d68-aa67-e3d937da8b00"
+      }
     }
   }
 }
