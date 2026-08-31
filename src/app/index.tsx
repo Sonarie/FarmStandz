@@ -30,16 +30,6 @@ export default function HomeScreen() {
           },
           zoom: 10,
         }}
-        markers={[
-          {
-            id: "test-farm-stand",
-            coordinates: {
-              latitude: 44.9778,
-              longitude: -93.265,
-            },
-            title: "Test Farm Stand",
-          },
-        ]}
         properties={{
           isMyLocationEnabled: true,
         }}
