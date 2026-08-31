@@ -8,6 +8,20 @@ export default function HomeScreen() {
     null,
   );
   const [selectedStand, setSelectedStand] = useState<string | null>(null);
+  const stands = [
+    {
+      id: "sample-produce-stand",
+      name: "Sample Produce Stand",
+      category: "Produce",
+      description: "Fresh roadside produce nearby",
+      coordinates: {
+        latitude: (location?.coords.latitude ?? 44.9778) + 0.002,
+        longitude: (location?.coords.longitude ?? -93.265) + 0.002,
+      },
+    },
+  ];
+
+  const selectedStandData = stands.find((stand) => stand.id === selectedStand);
   useEffect(() => {
     async function checkLocation() {
       const currentLocation = await Location.getCurrentPositionAsync({});
@@ -31,16 +45,11 @@ export default function HomeScreen() {
           },
           zoom: 10,
         }}
-        markers={[
-          {
-            id: "sample-produce-stand",
-            coordinates: {
-              latitude: (location?.coords.latitude ?? 44.9778) + 0.002,
-              longitude: (location?.coords.longitude ?? -93.265) + 0.002,
-            },
-            title: "Sample Produce Stand",
-          },
-        ]}
+        markers={stands.map((stand) => ({
+          id: stand.id,
+          coordinates: stand.coordinates,
+          title: stand.name,
+        }))}
         onMarkerClick={(marker) => {
           setSelectedStand(marker.id);
         }}
@@ -51,11 +60,11 @@ export default function HomeScreen() {
           isMyLocationEnabled: true,
         }}
       />
-      {selectedStand && (
+      {selectedStandData && (
         <View style={styles.standCard}>
-          <Text style={styles.standTitle}>Sample Produce Stand</Text>
-          <Text>Produce</Text>
-          <Text>Fresh roadside produce nearby</Text>
+          <Text style={styles.standTitle}>{selectedStandData.name}</Text>
+          <Text>{selectedStandData.category}</Text>
+          <Text>{selectedStandData.description}</Text>
         </View>
       )}
     </View>
