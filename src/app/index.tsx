@@ -1,7 +1,7 @@
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { stands } from "../data/stands";
 
 export default function HomeScreen() {
@@ -9,7 +9,11 @@ export default function HomeScreen() {
     null,
   );
   const [selectedStand, setSelectedStand] = useState<string | null>(null);
-
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newStandLocation, setNewStandLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const selectedStandData = stands.find((stand) => stand.id === selectedStand);
   useEffect(() => {
     async function checkLocation() {
@@ -58,6 +62,12 @@ export default function HomeScreen() {
         onMapClick={() => {
           setSelectedStand(null);
         }}
+        onMapLongClick={(event) => {
+          console.log("LONG PRESS", event.coordinates);
+          setNewStandLocation(event.coordinates);
+          setSelectedStand(null);
+          setShowAddForm(true);
+        }}
         properties={{
           isMyLocationEnabled: true,
         }}
@@ -67,6 +77,22 @@ export default function HomeScreen() {
           <Text style={styles.standTitle}>{selectedStandData.name}</Text>
           <Text>{selectedStandData.category}</Text>
           <Text>{selectedStandData.description}</Text>
+        </View>
+      )}
+      {showAddForm && (
+        <View style={styles.addForm}>
+          <Text style={styles.addFormTitle}>Add a Stand</Text>
+          <Text>Name</Text>
+          <Text>Category</Text>
+          <Text>Description</Text>
+
+          <Pressable
+            onPress={() => {
+              setShowAddForm(false);
+            }}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
         </View>
       )}
     </View>
@@ -113,5 +139,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 4,
+  },
+  addForm: {
+    position: "absolute",
+    left: 20,
+    right: 20,
+    bottom: 150,
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    elevation: 6,
+  },
+  addFormTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
+  cancelText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
