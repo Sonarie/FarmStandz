@@ -13,6 +13,12 @@ export default function HomeScreen() {
   const selectedStandData = stands.find((stand) => stand.id === selectedStand);
   useEffect(() => {
     async function checkLocation() {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        return;
+      }
+
       const currentLocation = await Location.getCurrentPositionAsync({});
       setLocation(currentLocation);
     }
