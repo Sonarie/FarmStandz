@@ -1,4 +1,15 @@
-export const stands = [
+export type Stand = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  coordinates: {
+    latitudeOffset: number;
+    longitudeOffset: number;
+  };
+};
+
+export const stands: Stand[] = [
   {
     id: "sample-produce-stand",
     name: "Sample Produce Stand",
