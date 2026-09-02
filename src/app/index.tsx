@@ -40,15 +40,26 @@ export default function HomeScreen() {
     "Berries",
   ];
   const bakeryItems = ["Bread", "Sourdough", "Cookies", "Cinnamon Rolls"];
+  const pantryItems = [
+    "Jams / Jellies",
+    "Honey",
+    "Maple Syrup",
+    "Pickles",
+    "Salsa",
+  ];
   const [showDetails, setShowDetails] = useState(false);
   const [selectedProduce, setSelectedProduce] = useState<string[]>([]);
   const [selectedBakery, setSelectedBakery] = useState<string[]>([]);
+  const [selectedPantry, setSelectedPantry] = useState<string[]>([]);
   const [showOtherProduce, setShowOtherProduce] = useState(false);
   const [otherProduce, setOtherProduce] = useState("");
   const [customProduceItems, setCustomProduceItems] = useState<string[]>([]);
   const [showOtherBakery, setShowOtherBakery] = useState(false);
   const [otherBakery, setOtherBakery] = useState("");
   const [customBakeryItems, setCustomBakeryItems] = useState<string[]>([]);
+  const [showOtherPantry, setShowOtherPantry] = useState(false);
+  const [otherPantry, setOtherPantry] = useState("");
+  const [customPantryItems, setCustomPantryItems] = useState<string[]>([]);
 
   useEffect(() => {
     async function checkLocation() {
@@ -464,6 +475,134 @@ export default function HomeScreen() {
                   setCustomBakeryItems([]);
                   setShowOtherBakery(false);
                   setOtherBakery("");
+                  setShowDetails(false);
+                  setShowAddForm(false);
+                  setNewStandLocation(null);
+                }}
+              >
+                <Text style={styles.addText}>Save Stand</Text>
+              </Pressable>
+            </View>
+          )}
+
+          {showDetails && selectedCategories.includes("Pantry") && (
+            <View>
+              <Text style={styles.detailsTitle}>
+                What pantry items are available?
+              </Text>
+
+              {pantryItems.map((item) => {
+                const isSelected = selectedPantry.includes(item);
+
+                return (
+                  <Pressable
+                    key={item}
+                    style={styles.categoryOption}
+                    onPress={() => {
+                      if (isSelected) {
+                        setSelectedPantry(
+                          selectedPantry.filter(
+                            (pantryItem) => pantryItem !== item,
+                          ),
+                        );
+                      } else {
+                        setSelectedPantry([...selectedPantry, item]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.checkbox}>
+                      {isSelected ? "✓" : "○"}
+                    </Text>
+                    <Text style={styles.categoryText}>{item}</Text>
+                  </Pressable>
+                );
+              })}
+
+              {customPantryItems.map((item) => {
+                const isSelected = selectedPantry.includes(item);
+
+                return (
+                  <Pressable
+                    key={item}
+                    style={styles.categoryOption}
+                    onPress={() => {
+                      if (isSelected) {
+                        setSelectedPantry(
+                          selectedPantry.filter(
+                            (pantryItem) => pantryItem !== item,
+                          ),
+                        );
+                      } else {
+                        setSelectedPantry([...selectedPantry, item]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.checkbox}>
+                      {isSelected ? "✓" : "○"}
+                    </Text>
+                    <Text style={styles.categoryText}>{item}</Text>
+                  </Pressable>
+                );
+              })}
+
+              {!showOtherPantry ? (
+                <Pressable
+                  onPress={() => {
+                    setShowOtherPantry(true);
+                  }}
+                >
+                  <Text style={styles.otherItemText}>+ Add another item</Text>
+                </Pressable>
+              ) : (
+                <TextInput
+                  style={styles.otherItemInput}
+                  placeholder="What else is available?"
+                  value={otherPantry}
+                  onChangeText={setOtherPantry}
+                  onSubmitEditing={() => {
+                    const newItem = otherPantry.trim();
+
+                    if (newItem) {
+                      setCustomPantryItems([...customPantryItems, newItem]);
+                      setSelectedPantry([...selectedPantry, newItem]);
+                    }
+
+                    setOtherPantry("");
+                    setShowOtherPantry(false);
+                  }}
+                  returnKeyType="done"
+                />
+              )}
+
+              <Pressable
+                onPress={() => {
+                  if (!newStandLocation) return;
+
+                  const baseLatitude = location?.coords.latitude ?? 44.9778;
+                  const baseLongitude = location?.coords.longitude ?? -93.265;
+
+                  const newStand = {
+                    id: `stand-${Date.now()}`,
+                    name: "Pantry Stand",
+                    category: selectedCategories.join(", "),
+                    description:
+                      selectedPantry.length > 0
+                        ? selectedPantry.join(", ")
+                        : "No items listed yet",
+                    coordinates: {
+                      latitudeOffset: newStandLocation.latitude - baseLatitude,
+                      longitudeOffset:
+                        newStandLocation.longitude - baseLongitude,
+                    },
+                  };
+
+                  setMapStands((currentStands) => [...currentStands, newStand]);
+
+                  setSelectedCategories([]);
+                  setSelectedPantry([]);
+                  setCustomPantryItems([]);
+                  setShowOtherPantry(false);
+                  setOtherPantry("");
                   setShowDetails(false);
                   setShowAddForm(false);
                   setNewStandLocation(null);
