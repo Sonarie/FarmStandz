@@ -39,11 +39,16 @@ export default function HomeScreen() {
     "Apples",
     "Berries",
   ];
+  const bakeryItems = ["Bread", "Sourdough", "Cookies", "Cinnamon Rolls"];
   const [showDetails, setShowDetails] = useState(false);
   const [selectedProduce, setSelectedProduce] = useState<string[]>([]);
+  const [selectedBakery, setSelectedBakery] = useState<string[]>([]);
   const [showOtherProduce, setShowOtherProduce] = useState(false);
   const [otherProduce, setOtherProduce] = useState("");
   const [customProduceItems, setCustomProduceItems] = useState<string[]>([]);
+  const [showOtherBakery, setShowOtherBakery] = useState(false);
+  const [otherBakery, setOtherBakery] = useState("");
+  const [customBakeryItems, setCustomBakeryItems] = useState<string[]>([]);
 
   useEffect(() => {
     async function checkLocation() {
@@ -332,6 +337,133 @@ export default function HomeScreen() {
                   setCustomProduceItems([]);
                   setShowOtherProduce(false);
                   setOtherProduce("");
+                  setShowDetails(false);
+                  setShowAddForm(false);
+                  setNewStandLocation(null);
+                }}
+              >
+                <Text style={styles.addText}>Save Stand</Text>
+              </Pressable>
+            </View>
+          )}
+
+          {showDetails && selectedCategories.includes("Bakery") && (
+            <View>
+              <Text style={styles.detailsTitle}>
+                What bakery items are available?
+              </Text>
+
+              {bakeryItems.map((item) => {
+                const isSelected = selectedBakery.includes(item);
+
+                return (
+                  <Pressable
+                    key={item}
+                    style={styles.categoryOption}
+                    onPress={() => {
+                      if (isSelected) {
+                        setSelectedBakery(
+                          selectedBakery.filter(
+                            (bakeryItem) => bakeryItem !== item,
+                          ),
+                        );
+                      } else {
+                        setSelectedBakery([...selectedBakery, item]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.checkbox}>
+                      {isSelected ? "✓" : "○"}
+                    </Text>
+                    <Text style={styles.categoryText}>{item}</Text>
+                  </Pressable>
+                );
+              })}
+
+              {customBakeryItems.map((item) => {
+                const isSelected = selectedBakery.includes(item);
+
+                return (
+                  <Pressable
+                    key={item}
+                    style={styles.categoryOption}
+                    onPress={() => {
+                      if (isSelected) {
+                        setSelectedBakery(
+                          selectedBakery.filter(
+                            (bakeryItem) => bakeryItem !== item,
+                          ),
+                        );
+                      } else {
+                        setSelectedBakery([...selectedBakery, item]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.checkbox}>
+                      {isSelected ? "✓" : "○"}
+                    </Text>
+                    <Text style={styles.categoryText}>{item}</Text>
+                  </Pressable>
+                );
+              })}
+
+              {!showOtherBakery ? (
+                <Pressable
+                  onPress={() => {
+                    setShowOtherBakery(true);
+                  }}
+                >
+                  <Text style={styles.otherItemText}>+ Add another item</Text>
+                </Pressable>
+              ) : (
+                <TextInput
+                  style={styles.otherItemInput}
+                  placeholder="What else is available?"
+                  value={otherBakery}
+                  onChangeText={setOtherBakery}
+                  onSubmitEditing={() => {
+                    const newItem = otherBakery.trim();
+
+                    if (newItem) {
+                      setCustomBakeryItems([...customBakeryItems, newItem]);
+                      setSelectedBakery([...selectedBakery, newItem]);
+                    }
+
+                    setOtherBakery("");
+                    setShowOtherBakery(false);
+                  }}
+                  returnKeyType="done"
+                />
+              )}
+              <Pressable
+                onPress={() => {
+                  if (!newStandLocation) return;
+
+                  const baseLatitude = location?.coords.latitude ?? 44.9778;
+                  const baseLongitude = location?.coords.longitude ?? -93.265;
+
+                  const newStand = {
+                    id: `stand-${Date.now()}`,
+                    name: "Bakery Stand",
+                    category: selectedCategories.join(", "),
+                    description:
+                      selectedBakery.length > 0
+                        ? selectedBakery.join(", ")
+                        : "No items listed yet",
+                    coordinates: {
+                      latitudeOffset: newStandLocation.latitude - baseLatitude,
+                      longitudeOffset:
+                        newStandLocation.longitude - baseLongitude,
+                    },
+                  };
+
+                  setMapStands((currentStands) => [...currentStands, newStand]);
+
+                  setSelectedCategories([]);
+                  setSelectedBakery([]);
+                  setCustomBakeryItems([]);
+                  setShowOtherBakery(false);
+                  setOtherBakery("");
                   setShowDetails(false);
                   setShowAddForm(false);
                   setNewStandLocation(null);
