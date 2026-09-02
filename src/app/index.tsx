@@ -14,7 +14,9 @@ export default function HomeScreen() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const selectedStandData = stands.find((stand) => stand.id === selectedStand);
+  const categories = ["Produce", "Eggs", "Bakery", "Pantry", "Wood"];
   useEffect(() => {
     async function checkLocation() {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -81,17 +83,46 @@ export default function HomeScreen() {
       )}
       {showAddForm && (
         <View style={styles.addForm}>
-          <Text style={styles.addFormTitle}>Add a Stand</Text>
-          <Text>Name</Text>
-          <Text>Category</Text>
-          <Text>Description</Text>
-
           <Pressable
+            style={styles.closeButton}
             onPress={() => {
+              setSelectedCategories([]);
               setShowAddForm(false);
             }}
           >
-            <Text style={styles.cancelText}>Cancel</Text>
+            <Text style={styles.closeButtonText}>×</Text>
+          </Pressable>
+          <Text style={styles.addFormTitle}>What kind of stand is this?</Text>
+
+          {categories.map((category) => {
+            const isSelected = selectedCategories.includes(category);
+
+            return (
+              <Pressable
+                key={category}
+                style={styles.categoryOption}
+                onPress={() => {
+                  if (isSelected) {
+                    setSelectedCategories(
+                      selectedCategories.filter((item) => item !== category),
+                    );
+                  } else {
+                    setSelectedCategories([...selectedCategories, category]);
+                  }
+                }}
+              >
+                <Text style={styles.checkbox}>{isSelected ? "✓" : "○"}</Text>
+                <Text style={styles.categoryText}>{category}</Text>
+              </Pressable>
+            );
+          })}
+
+          <Pressable
+            onPress={() => {
+              console.log("ADD STAND", newStandLocation, selectedCategories);
+            }}
+          >
+            <Text style={styles.addText}>Add</Text>
           </Pressable>
         </View>
       )}
@@ -160,4 +191,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  categoryOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  checkbox: {
+    fontSize: 20,
+    width: 32,
+  },
+  categoryText: {
+    fontSize: 17,
+  },
+  closeButton: {
+  position: "absolute",
+  top: 8,
+  right: 12,
+  padding: 4,
+  zIndex: 1,
+},
+closeButtonText: {
+  fontSize: 28,
+  fontWeight: "bold",
+},
+addText: {
+  marginTop: 16,
+  fontSize: 18,
+  fontWeight: "bold",
+  textAlign: "center",
+},
 });
