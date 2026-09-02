@@ -1,7 +1,14 @@
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { stands } from "../data/stands";
 
 export default function HomeScreen() {
@@ -15,7 +22,10 @@ export default function HomeScreen() {
     longitude: number;
   } | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const selectedStandData = stands.find((stand) => stand.id === selectedStand);
+  const [mapStands, setMapStands] = useState(stands);
+  const selectedStandData = mapStands.find(
+    (stand) => stand.id === selectedStand,
+  );
   const categories = ["Produce", "Eggs", "Bakery", "Pantry", "Wood"];
   const produceItems = [
     "Corn",
@@ -64,7 +74,7 @@ export default function HomeScreen() {
           },
           zoom: 10,
         }}
-        markers={stands.map((stand) => ({
+        markers={mapStands.map((stand) => ({
           id: stand.id,
           coordinates: {
             latitude:
@@ -100,7 +110,7 @@ export default function HomeScreen() {
         </View>
       )}
       {showAddForm && (
-        <View style={styles.addForm}>
+        <ScrollView style={styles.addForm}>
           <Pressable
             style={styles.closeButton}
             onPress={() => {
@@ -108,9 +118,9 @@ export default function HomeScreen() {
               setSelectedProduce([]);
               setShowOtherProduce(false);
               setOtherProduce("");
+              setCustomProduceItems([]);
               setShowDetails(false);
               setShowAddForm(false);
-              setCustomProduceItems([]);
             }}
           >
             <Text style={styles.closeButtonText}>×</Text>
@@ -152,25 +162,59 @@ export default function HomeScreen() {
                 );
               })}
 
-              <Pressable
-                onPress={() => {
-                  setShowDetails(true);
-                }}
-              >
-                <Text style={styles.detailsText}>+ Add more details</Text>
-              </Pressable>
+              {selectedCategories.length > 0 && (
+                <>
+                  <Pressable
+                    onPress={() => {
+                      setShowDetails(true);
+                    }}
+                  >
+                    <Text style={styles.detailsText}>+ Add more details</Text>
+                  </Pressable>
 
-              <Pressable
-                onPress={() => {
-                  console.log(
-                    "ADD STAND",
-                    newStandLocation,
-                    selectedCategories,
-                  );
-                }}
-              >
-                <Text style={styles.addText}>Add</Text>
-              </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      if (!newStandLocation) return;
+
+                      const baseLatitude = location?.coords.latitude ?? 44.9778;
+                      const baseLongitude =
+                        location?.coords.longitude ?? -93.265;
+
+                      const newStand = {
+                        id: `stand-${Date.now()}`,
+                        name: "Produce Stand",
+                        category: selectedCategories.join(", "),
+                        description:
+                          selectedProduce.length > 0
+                            ? selectedProduce.join(", ")
+                            : "No items listed yet",
+                        coordinates: {
+                          latitudeOffset:
+                            newStandLocation.latitude - baseLatitude,
+                          longitudeOffset:
+                            newStandLocation.longitude - baseLongitude,
+                        },
+                      };
+
+                      setMapStands((currentStands) => [
+                        ...currentStands,
+                        newStand,
+                      ]);
+
+                      setSelectedCategories([]);
+                      setSelectedProduce([]);
+                      setCustomProduceItems([]);
+                      setShowOtherProduce(false);
+                      setOtherProduce("");
+                      setShowDetails(false);
+                      setShowAddForm(false);
+                      setNewStandLocation(null);
+                    }}
+                  >
+                    <Text style={styles.addText}>Save Stand</Text>
+                  </Pressable>
+                </>
+              )}
             </>
           )}
 
@@ -259,9 +303,45 @@ export default function HomeScreen() {
                   returnKeyType="done"
                 />
               )}
+              <Pressable
+                onPress={() => {
+                  if (!newStandLocation) return;
+
+                  const baseLatitude = location?.coords.latitude ?? 44.9778;
+                  const baseLongitude = location?.coords.longitude ?? -93.265;
+
+                  const newStand = {
+                    id: `stand-${Date.now()}`,
+                    name: "Produce Stand",
+                    category: selectedCategories.join(", "),
+                    description:
+                      selectedProduce.length > 0
+                        ? selectedProduce.join(", ")
+                        : "No items listed yet",
+                    coordinates: {
+                      latitudeOffset: newStandLocation.latitude - baseLatitude,
+                      longitudeOffset:
+                        newStandLocation.longitude - baseLongitude,
+                    },
+                  };
+
+                  setMapStands((currentStands) => [...currentStands, newStand]);
+
+                  setSelectedCategories([]);
+                  setSelectedProduce([]);
+                  setCustomProduceItems([]);
+                  setShowOtherProduce(false);
+                  setOtherProduce("");
+                  setShowDetails(false);
+                  setShowAddForm(false);
+                  setNewStandLocation(null);
+                }}
+              >
+                <Text style={styles.addText}>Save Stand</Text>
+              </Pressable>
             </View>
           )}
-        </View>
+        </ScrollView>
       )}
     </View>
   );
