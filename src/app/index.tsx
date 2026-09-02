@@ -17,6 +17,21 @@ export default function HomeScreen() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const selectedStandData = stands.find((stand) => stand.id === selectedStand);
   const categories = ["Produce", "Eggs", "Bakery", "Pantry", "Wood"];
+  const produceItems = [
+    "Corn",
+    "Tomatoes",
+    "Cucumbers",
+    "Peppers",
+    "Potatoes",
+    "Onions",
+    "Squash / Zucchini",
+    "Pumpkins",
+    "Apples",
+    "Berries",
+  ];
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedProduce, setSelectedProduce] = useState<string[]>([]);
+
   useEffect(() => {
     async function checkLocation() {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -87,43 +102,106 @@ export default function HomeScreen() {
             style={styles.closeButton}
             onPress={() => {
               setSelectedCategories([]);
+              setSelectedProduce([]);
+              setShowDetails(false);
               setShowAddForm(false);
             }}
           >
             <Text style={styles.closeButtonText}>×</Text>
           </Pressable>
-          <Text style={styles.addFormTitle}>What kind of stand is this?</Text>
 
-          {categories.map((category) => {
-            const isSelected = selectedCategories.includes(category);
+          {!showDetails && (
+            <>
+              <Text style={styles.addFormTitle}>
+                What kind of stand is this?
+              </Text>
 
-            return (
+              {categories.map((category) => {
+                const isSelected = selectedCategories.includes(category);
+
+                return (
+                  <Pressable
+                    key={category}
+                    style={styles.categoryOption}
+                    onPress={() => {
+                      if (isSelected) {
+                        setSelectedCategories(
+                          selectedCategories.filter(
+                            (item) => item !== category,
+                          ),
+                        );
+                      } else {
+                        setSelectedCategories([
+                          ...selectedCategories,
+                          category,
+                        ]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.checkbox}>
+                      {isSelected ? "✓" : "○"}
+                    </Text>
+                    <Text style={styles.categoryText}>{category}</Text>
+                  </Pressable>
+                );
+              })}
+
               <Pressable
-                key={category}
-                style={styles.categoryOption}
                 onPress={() => {
-                  if (isSelected) {
-                    setSelectedCategories(
-                      selectedCategories.filter((item) => item !== category),
-                    );
-                  } else {
-                    setSelectedCategories([...selectedCategories, category]);
-                  }
+                  setShowDetails(true);
                 }}
               >
-                <Text style={styles.checkbox}>{isSelected ? "✓" : "○"}</Text>
-                <Text style={styles.categoryText}>{category}</Text>
+                <Text style={styles.detailsText}>+ Add more details</Text>
               </Pressable>
-            );
-          })}
 
-          <Pressable
-            onPress={() => {
-              console.log("ADD STAND", newStandLocation, selectedCategories);
-            }}
-          >
-            <Text style={styles.addText}>Add</Text>
-          </Pressable>
+              <Pressable
+                onPress={() => {
+                  console.log(
+                    "ADD STAND",
+                    newStandLocation,
+                    selectedCategories,
+                  );
+                }}
+              >
+                <Text style={styles.addText}>Add</Text>
+              </Pressable>
+            </>
+          )}
+
+          {showDetails && selectedCategories.includes("Produce") && (
+            <View>
+              <Text style={styles.detailsTitle}>
+                What produce is available?
+              </Text>
+
+              {produceItems.map((item) => {
+                const isSelected = selectedProduce.includes(item);
+
+                return (
+                  <Pressable
+                    key={item}
+                    style={styles.categoryOption}
+                    onPress={() => {
+                      if (isSelected) {
+                        setSelectedProduce(
+                          selectedProduce.filter((produce) => produce !== item),
+                        );
+                      } else {
+                        setSelectedProduce([...selectedProduce, item]);
+                      }
+                    }}
+                  >
+                    <Text style={styles.checkbox}>
+                      {isSelected ? "✓" : "○"}
+                    </Text>
+                    <Text style={styles.categoryText}>{item}</Text>
+                  </Pressable>
+                );
+              })}
+
+              <Text style={styles.otherItemText}>+ Add another item</Text>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -204,20 +282,35 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   closeButton: {
-  position: "absolute",
-  top: 8,
-  right: 12,
-  padding: 4,
-  zIndex: 1,
-},
-closeButtonText: {
-  fontSize: 28,
-  fontWeight: "bold",
-},
-addText: {
-  marginTop: 16,
-  fontSize: 18,
-  fontWeight: "bold",
-  textAlign: "center",
-},
+    position: "absolute",
+    top: 8,
+    right: 12,
+    padding: 4,
+    zIndex: 1,
+  },
+  closeButtonText: {
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  addText: {
+    marginTop: 16,
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  detailsText: {
+    marginTop: 16,
+    fontSize: 16,
+    textAlign: "center",
+  },
+  detailsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  otherItemText: {
+    marginTop: 12,
+    fontSize: 16,
+  },
 });
