@@ -1,7 +1,7 @@
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { stands } from "../data/stands";
 
 export default function HomeScreen() {
@@ -31,6 +31,9 @@ export default function HomeScreen() {
   ];
   const [showDetails, setShowDetails] = useState(false);
   const [selectedProduce, setSelectedProduce] = useState<string[]>([]);
+  const [showOtherProduce, setShowOtherProduce] = useState(false);
+  const [otherProduce, setOtherProduce] = useState("");
+  const [customProduceItems, setCustomProduceItems] = useState<string[]>([]);
 
   useEffect(() => {
     async function checkLocation() {
@@ -103,8 +106,11 @@ export default function HomeScreen() {
             onPress={() => {
               setSelectedCategories([]);
               setSelectedProduce([]);
+              setShowOtherProduce(false);
+              setOtherProduce("");
               setShowDetails(false);
               setShowAddForm(false);
+              setCustomProduceItems([]);
             }}
           >
             <Text style={styles.closeButtonText}>×</Text>
@@ -199,7 +205,60 @@ export default function HomeScreen() {
                 );
               })}
 
-              <Text style={styles.otherItemText}>+ Add another item</Text>
+              {!showOtherProduce ? (
+                <Pressable
+                  onPress={() => {
+                    setShowOtherProduce(true);
+                  }}
+                >
+                  {customProduceItems.map((item) => {
+                    const isSelected = selectedProduce.includes(item);
+
+                    return (
+                      <Pressable
+                        key={item}
+                        style={styles.categoryOption}
+                        onPress={() => {
+                          if (isSelected) {
+                            setSelectedProduce(
+                              selectedProduce.filter(
+                                (produce) => produce !== item,
+                              ),
+                            );
+                          } else {
+                            setSelectedProduce([...selectedProduce, item]);
+                          }
+                        }}
+                      >
+                        <Text style={styles.checkbox}>
+                          {isSelected ? "✓" : "○"}
+                        </Text>
+                        <Text style={styles.categoryText}>{item}</Text>
+                      </Pressable>
+                    );
+                  })}
+                  <Text style={styles.otherItemText}>+ Add another item</Text>
+                </Pressable>
+              ) : (
+                <TextInput
+                  style={styles.otherItemInput}
+                  placeholder="What else is available?"
+                  value={otherProduce}
+                  onChangeText={setOtherProduce}
+                  onSubmitEditing={() => {
+                    const newItem = otherProduce.trim();
+
+                    if (newItem) {
+                      setCustomProduceItems([...customProduceItems, newItem]);
+                      setSelectedProduce([...selectedProduce, newItem]);
+                    }
+
+                    setOtherProduce("");
+                    setShowOtherProduce(false);
+                  }}
+                  returnKeyType="done"
+                />
+              )}
             </View>
           )}
         </View>
@@ -311,6 +370,15 @@ const styles = StyleSheet.create({
   },
   otherItemText: {
     marginTop: 12,
+    fontSize: 16,
+  },
+  otherItemInput: {
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     fontSize: 16,
   },
 });
