@@ -60,6 +60,7 @@ export default function HomeScreen() {
   const [showOtherPantry, setShowOtherPantry] = useState(false);
   const [otherPantry, setOtherPantry] = useState("");
   const [customPantryItems, setCustomPantryItems] = useState<string[]>([]);
+  const [standPhotos, setStandPhotos] = useState<string[]>([]);
 
   useEffect(() => {
     async function checkLocation() {
@@ -612,6 +613,18 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           )}
+
+          {showDetails && (
+            <View>
+              <Pressable
+                onPress={() => {
+                  console.log("ADD PHOTOS");
+                }}
+              >
+                <Text style={styles.detailsText}>+ Add photos</Text>
+              </Pressable>
+            </View>
+          )}
         </ScrollView>
       )}
     </View>
@@ -664,6 +677,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     bottom: 150,
+    maxHeight: "70%",
     backgroundColor: "#fff",
     padding: 16,
     borderRadius: 12,

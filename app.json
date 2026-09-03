@@ -13,9 +13,7 @@
     "android": {
       "package": "com.sonarie.farmstandz",
       "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyBm8yIN_NtR4bJrILklLg1rfFjCODzejXc"
-        }
+        "googleMaps": {}
       },
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
