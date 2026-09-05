@@ -1,15 +1,18 @@
+import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
 import {
+  Alert,
+  Image,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { stands } from "../data/stands";
+import { styles } from "../styles/mapStyles";
 
 export default function HomeScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -76,6 +79,29 @@ export default function HomeScreen() {
 
     checkLocation();
   }, []);
+
+  const takePhoto = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert(
+        "Camera permission needed",
+        "Roadside Standz needs camera access to take a photo.",
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setStandPhotos((currentPhotos) => [
+        ...currentPhotos,
+        result.assets[0].uri,
+      ]);
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Roadside Standz</Text>
@@ -104,16 +130,27 @@ export default function HomeScreen() {
           title: stand.name,
         }))}
         onMarkerClick={(marker) => {
-          setSelectedStand(marker.id);
+          if (marker.id) {
+            setSelectedStand(marker.id);
+          }
         }}
         onMapClick={() => {
           setSelectedStand(null);
         }}
         onMapLongClick={(event) => {
-          console.log("LONG PRESS", event.coordinates);
-          setNewStandLocation(event.coordinates);
-          setSelectedStand(null);
-          setShowAddForm(true);
+          const { latitude, longitude } = event.coordinates;
+
+          if (latitude !== undefined && longitude !== undefined) {
+            console.log("LONG PRESS", event.coordinates);
+
+            setNewStandLocation({
+              latitude,
+              longitude,
+            });
+
+            setSelectedStand(null);
+            setShowAddForm(true);
+          }
         }}
         properties={{
           isMyLocationEnabled: true,
@@ -127,7 +164,10 @@ export default function HomeScreen() {
         </View>
       )}
       {showAddForm && (
-        <ScrollView style={styles.addForm}>
+        <ScrollView
+          style={styles.addForm}
+          contentContainerStyle={{ paddingBottom: 40 }}
+        >
           <Pressable
             style={styles.closeButton}
             onPress={() => {
@@ -142,7 +182,6 @@ export default function HomeScreen() {
           >
             <Text style={styles.closeButtonText}>×</Text>
           </Pressable>
-
           {!showDetails && (
             <>
               <Text style={styles.addFormTitle}>
@@ -217,7 +256,7 @@ export default function HomeScreen() {
                         ...currentStands,
                         newStand,
                       ]);
-
+                      setStandPhotos([]);
                       setSelectedCategories([]);
                       setSelectedProduce([]);
                       setCustomProduceItems([]);
@@ -234,7 +273,6 @@ export default function HomeScreen() {
               )}
             </>
           )}
-
           {showDetails && selectedCategories.includes("Produce") && (
             <View>
               <Text style={styles.detailsTitle}>
@@ -343,7 +381,7 @@ export default function HomeScreen() {
                   };
 
                   setMapStands((currentStands) => [...currentStands, newStand]);
-
+                  setStandPhotos([]);
                   setSelectedCategories([]);
                   setSelectedProduce([]);
                   setCustomProduceItems([]);
@@ -358,7 +396,6 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           )}
-
           {showDetails && selectedCategories.includes("Bakery") && (
             <View>
               <Text style={styles.detailsTitle}>
@@ -485,7 +522,6 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           )}
-
           {showDetails && selectedCategories.includes("Pantry") && (
             <View>
               <Text style={styles.detailsTitle}>
@@ -613,16 +649,56 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           )}
-
           {showDetails && (
             <View>
               <Pressable
                 onPress={() => {
-                  console.log("ADD PHOTOS");
+                  Alert.alert(
+                    "Add photos",
+                    "How would you like to add a photo?",
+                    [
+                      {
+                        text: "Take Photo",
+                        onPress: takePhoto,
+                      },
+                      {
+                        text: "Choose from Library",
+                        onPress: async () => {
+                          const result =
+                            await ImagePicker.launchImageLibraryAsync({
+                              quality: 0.8,
+                            });
+
+                          if (!result.canceled) {
+                            setStandPhotos((currentPhotos) => [
+                              ...currentPhotos,
+                              result.assets[0].uri,
+                            ]);
+                          }
+                        },
+                      },
+                      {
+                        text: "Cancel",
+                        style: "cancel",
+                      },
+                    ],
+                  );
                 }}
               >
                 <Text style={styles.detailsText}>+ Add photos</Text>
               </Pressable>
+              {standPhotos.map((photo, index) => (
+                <Image
+                  key={`${photo}-${index}`}
+                  source={{ uri: photo }}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 8,
+                    marginTop: 10,
+                  }}
+                />
+              ))}
             </View>
           )}
         </ScrollView>
@@ -630,120 +706,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 60,
-  },
-  subtitle: {
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 8,
-    marginBottom: 0,
-  },
-  tagline: {
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
-    marginBottom: 16,
-  },
-  map: {
-    flex: 1,
-  },
-  standCard: {
-    position: "absolute",
-    left: 20,
-    right: 20,
-    bottom: 90,
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    elevation: 5,
-  },
-  standTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  addForm: {
-    position: "absolute",
-    left: 20,
-    right: 20,
-    bottom: 150,
-    maxHeight: "70%",
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    elevation: 6,
-  },
-  addFormTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
-  cancelText: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  categoryOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  checkbox: {
-    fontSize: 20,
-    width: 32,
-  },
-  categoryText: {
-    fontSize: 17,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 8,
-    right: 12,
-    padding: 4,
-    zIndex: 1,
-  },
-  closeButtonText: {
-    fontSize: 28,
-    fontWeight: "bold",
-  },
-  addText: {
-    marginTop: 16,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  detailsText: {
-    marginTop: 16,
-    fontSize: 16,
-    textAlign: "center",
-  },
-  detailsTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  otherItemText: {
-    marginTop: 12,
-    fontSize: 16,
-  },
-  otherItemInput: {
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-  },
-});
