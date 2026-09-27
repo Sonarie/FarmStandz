@@ -1,7 +1,14 @@
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
 import { PantryDetails } from "../components/addStand/PantryDetails";
@@ -11,6 +18,7 @@ import { stands } from "../data/stands";
 import { styles } from "../styles/mapStyles";
 
 export default function HomeScreen() {
+  const { width: screenWidth } = useWindowDimensions();
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null,
   );
@@ -340,7 +348,7 @@ export default function HomeScreen() {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             contentOffset={{
-              x: expandedPhotoIndex * 360,
+              x: expandedPhotoIndex * screenWidth,
               y: 0,
             }}
             style={{ width: "100%" }}
@@ -349,7 +357,7 @@ export default function HomeScreen() {
               <View
                 key={`${photo}-${index}`}
                 style={{
-                  width: 360,
+                  width: screenWidth,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
