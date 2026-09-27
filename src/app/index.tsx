@@ -2,10 +2,11 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
 import { PantryDetails } from "../components/addStand/PantryDetails";
+import { PhotoSection } from "../components/addStand/PhotoSection";
 import { ProduceDetails } from "../components/addStand/ProduceDetails";
 import { stands } from "../data/stands";
 import { styles } from "../styles/mapStyles";
@@ -290,59 +291,11 @@ export default function HomeScreen() {
             />
           )}
           {showDetails && (
-            <View>
-              <Pressable
-                onPress={() => {
-                  Alert.alert(
-                    "Add photos",
-                    "How would you like to add a photo?",
-                    [
-                      {
-                        text: "Take Photo",
-                        onPress: takePhoto,
-                      },
-                      {
-                        text: "Choose from Library",
-                        onPress: async () => {
-                          const result =
-                            await ImagePicker.launchImageLibraryAsync({
-                              quality: 0.8,
-                            });
-
-                          if (!result.canceled) {
-                            setStandPhotos((currentPhotos) => [
-                              ...currentPhotos,
-                              result.assets[0].uri,
-                            ]);
-                          }
-                        },
-                      },
-                      {
-                        text: "Cancel",
-                        style: "cancel",
-                      },
-                    ],
-                  );
-                }}
-              >
-                <Text style={styles.detailsText}>+ Add photos</Text>
-              </Pressable>
-              {standPhotos.map((photo, index) => (
-                <Image
-                  key={`${photo}-${index}`}
-                  source={{ uri: photo }}
-                  style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 8,
-                    marginTop: 10,
-                  }}
-                />
-              ))}
-              <Pressable onPress={saveStand}>
-                <Text style={styles.addText}>Save Stand</Text>
-              </Pressable>
-            </View>
+            <PhotoSection
+              standPhotos={standPhotos}
+              setStandPhotos={setStandPhotos}
+              onSave={saveStand}
+            />
           )}
         </ScrollView>
       )}
