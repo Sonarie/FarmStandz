@@ -210,18 +210,23 @@ export default function HomeScreen() {
           <Text style={styles.standTitle}>{selectedStandData.name}</Text>
           <Text>{selectedStandData.description}</Text>
 
-          {selectedStandData.photos?.map((photo, index) => (
-            <Image
-              key={`${photo}-${index}`}
-              source={{ uri: photo }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 8,
-                marginTop: 10,
-              }}
-            />
-          ))}
+          {selectedStandData.photos?.length > 0 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {selectedStandData.photos.map((photo, index) => (
+                <Image
+                  key={`${photo}-${index}`}
+                  source={{ uri: photo }}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 8,
+                    marginTop: 10,
+                    marginRight: 10,
+                  }}
+                />
+              ))}
+            </ScrollView>
+          )}
         </View>
       )}
       {showAddForm && (
