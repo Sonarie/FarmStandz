@@ -1,8 +1,7 @@
-import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
 import { PantryDetails } from "../components/addStand/PantryDetails";
