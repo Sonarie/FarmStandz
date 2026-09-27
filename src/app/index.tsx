@@ -102,6 +102,74 @@ export default function HomeScreen() {
       ]);
     }
   };
+
+  // ====================
+  // Save Stand
+  // ====================
+
+  const saveStand = () => {
+    if (!newStandLocation) return;
+
+    const baseLatitude = location?.coords.latitude ?? 44.9778;
+    const baseLongitude = location?.coords.longitude ?? -93.265;
+
+    // Build inventory from the selected categories
+    const inventory: string[] = [];
+
+    if (selectedCategories.includes("Produce")) {
+      inventory.push(...selectedProduce);
+    }
+
+    if (selectedCategories.includes("Bakery")) {
+      inventory.push(...selectedBakery);
+    }
+
+    if (selectedCategories.includes("Pantry")) {
+      inventory.push(...selectedPantry);
+    }
+
+    const newStand = {
+      id: `stand-${Date.now()}`,
+      name:
+        selectedCategories.length === 1
+          ? `${selectedCategories[0]} Stand`
+          : "Roadside Stand",
+      category: selectedCategories.join(", "),
+      description: inventory.join(", "),
+      coordinates: {
+        latitudeOffset: newStandLocation.latitude - baseLatitude,
+        longitudeOffset: newStandLocation.longitude - baseLongitude,
+      },
+    };
+
+    setMapStands((currentStands) => [...currentStands, newStand]);
+
+    // Reset shared stand information
+    setStandPhotos([]);
+    setSelectedCategories([]);
+    setShowDetails(false);
+    setShowAddForm(false);
+    setNewStandLocation(null);
+
+    // Reset Produce
+    setSelectedProduce([]);
+    setCustomProduceItems([]);
+    setShowOtherProduce(false);
+    setOtherProduce("");
+
+    // Reset Bakery
+    setSelectedBakery([]);
+    setCustomBakeryItems([]);
+    setShowOtherBakery(false);
+    setOtherBakery("");
+
+    // Reset Pantry
+    setSelectedPantry([]);
+    setCustomPantryItems([]);
+    setShowOtherPantry(false);
+    setOtherPantry("");
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Roadside Standz</Text>
@@ -159,7 +227,6 @@ export default function HomeScreen() {
       {selectedStandData && (
         <View style={styles.standCard}>
           <Text style={styles.standTitle}>{selectedStandData.name}</Text>
-          <Text>{selectedStandData.category}</Text>
           <Text>{selectedStandData.description}</Text>
         </View>
       )}
@@ -358,42 +425,6 @@ export default function HomeScreen() {
                   returnKeyType="done"
                 />
               )}
-              <Pressable
-                onPress={() => {
-                  if (!newStandLocation) return;
-
-                  const baseLatitude = location?.coords.latitude ?? 44.9778;
-                  const baseLongitude = location?.coords.longitude ?? -93.265;
-
-                  const newStand = {
-                    id: `stand-${Date.now()}`,
-                    name: "Produce Stand",
-                    category: selectedCategories.join(", "),
-                    description:
-                      selectedProduce.length > 0
-                        ? selectedProduce.join(", ")
-                        : "No items listed yet",
-                    coordinates: {
-                      latitudeOffset: newStandLocation.latitude - baseLatitude,
-                      longitudeOffset:
-                        newStandLocation.longitude - baseLongitude,
-                    },
-                  };
-
-                  setMapStands((currentStands) => [...currentStands, newStand]);
-                  setStandPhotos([]);
-                  setSelectedCategories([]);
-                  setSelectedProduce([]);
-                  setCustomProduceItems([]);
-                  setShowOtherProduce(false);
-                  setOtherProduce("");
-                  setShowDetails(false);
-                  setShowAddForm(false);
-                  setNewStandLocation(null);
-                }}
-              >
-                <Text style={styles.addText}>Save Stand</Text>
-              </Pressable>
             </View>
           )}
           {showDetails && selectedCategories.includes("Bakery") && (
@@ -484,42 +515,6 @@ export default function HomeScreen() {
                   returnKeyType="done"
                 />
               )}
-              <Pressable
-                onPress={() => {
-                  if (!newStandLocation) return;
-
-                  const baseLatitude = location?.coords.latitude ?? 44.9778;
-                  const baseLongitude = location?.coords.longitude ?? -93.265;
-
-                  const newStand = {
-                    id: `stand-${Date.now()}`,
-                    name: "Bakery Stand",
-                    category: selectedCategories.join(", "),
-                    description:
-                      selectedBakery.length > 0
-                        ? selectedBakery.join(", ")
-                        : "No items listed yet",
-                    coordinates: {
-                      latitudeOffset: newStandLocation.latitude - baseLatitude,
-                      longitudeOffset:
-                        newStandLocation.longitude - baseLongitude,
-                    },
-                  };
-
-                  setMapStands((currentStands) => [...currentStands, newStand]);
-
-                  setSelectedCategories([]);
-                  setSelectedBakery([]);
-                  setCustomBakeryItems([]);
-                  setShowOtherBakery(false);
-                  setOtherBakery("");
-                  setShowDetails(false);
-                  setShowAddForm(false);
-                  setNewStandLocation(null);
-                }}
-              >
-                <Text style={styles.addText}>Save Stand</Text>
-              </Pressable>
             </View>
           )}
           {showDetails && selectedCategories.includes("Pantry") && (
@@ -610,43 +605,6 @@ export default function HomeScreen() {
                   returnKeyType="done"
                 />
               )}
-
-              <Pressable
-                onPress={() => {
-                  if (!newStandLocation) return;
-
-                  const baseLatitude = location?.coords.latitude ?? 44.9778;
-                  const baseLongitude = location?.coords.longitude ?? -93.265;
-
-                  const newStand = {
-                    id: `stand-${Date.now()}`,
-                    name: "Pantry Stand",
-                    category: selectedCategories.join(", "),
-                    description:
-                      selectedPantry.length > 0
-                        ? selectedPantry.join(", ")
-                        : "No items listed yet",
-                    coordinates: {
-                      latitudeOffset: newStandLocation.latitude - baseLatitude,
-                      longitudeOffset:
-                        newStandLocation.longitude - baseLongitude,
-                    },
-                  };
-
-                  setMapStands((currentStands) => [...currentStands, newStand]);
-
-                  setSelectedCategories([]);
-                  setSelectedPantry([]);
-                  setCustomPantryItems([]);
-                  setShowOtherPantry(false);
-                  setOtherPantry("");
-                  setShowDetails(false);
-                  setShowAddForm(false);
-                  setNewStandLocation(null);
-                }}
-              >
-                <Text style={styles.addText}>Save Stand</Text>
-              </Pressable>
             </View>
           )}
           {showDetails && (
@@ -699,6 +657,9 @@ export default function HomeScreen() {
                   }}
                 />
               ))}
+              <Pressable onPress={saveStand}>
+                <Text style={styles.addText}>Save Stand</Text>
+              </Pressable>
             </View>
           )}
         </ScrollView>
