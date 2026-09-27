@@ -3,6 +3,7 @@ export type Stand = {
   name: string;
   category: string;
   description: string;
+  photos: string[];
   availableItems?: string[];
   coordinates: {
     latitudeOffset: number;

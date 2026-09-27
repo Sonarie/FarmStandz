@@ -1,7 +1,7 @@
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
 import { PantryDetails } from "../components/addStand/PantryDetails";
@@ -76,7 +76,7 @@ export default function HomeScreen() {
     checkLocation();
   }, []);
 
-    // ====================
+  // ====================
   // Reset Add Stand Form
   // ====================
 
@@ -139,6 +139,7 @@ export default function HomeScreen() {
           : "Roadside Stand",
       category: selectedCategories.join(", "),
       description: inventory.join(", "),
+      photos: standPhotos,
       coordinates: {
         latitudeOffset: newStandLocation.latitude - baseLatitude,
         longitudeOffset: newStandLocation.longitude - baseLongitude,
@@ -208,6 +209,19 @@ export default function HomeScreen() {
         <View style={styles.standCard}>
           <Text style={styles.standTitle}>{selectedStandData.name}</Text>
           <Text>{selectedStandData.description}</Text>
+
+          {selectedStandData.photos?.map((photo, index) => (
+            <Image
+              key={`${photo}-${index}`}
+              source={{ uri: photo }}
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 8,
+                marginTop: 10,
+              }}
+            />
+          ))}
         </View>
       )}
       {showAddForm && (
