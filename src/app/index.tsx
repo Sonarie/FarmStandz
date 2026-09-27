@@ -60,7 +60,9 @@ export default function HomeScreen() {
   const [otherPantry, setOtherPantry] = useState("");
   const [customPantryItems, setCustomPantryItems] = useState<string[]>([]);
   const [standPhotos, setStandPhotos] = useState<string[]>([]);
-  const [expandedPhoto, setExpandedPhoto] = useState<string | null>(null);
+  const [expandedPhotoIndex, setExpandedPhotoIndex] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     async function checkLocation() {
@@ -216,7 +218,7 @@ export default function HomeScreen() {
               {selectedStandData.photos.map((photo, index) => (
                 <Pressable
                   key={`${photo}-${index}`}
-                  onPress={() => setExpandedPhoto(photo)}
+                  onPress={() => setExpandedPhotoIndex(index)}
                 >
                   <Image
                     source={{ uri: photo }}
@@ -299,7 +301,7 @@ export default function HomeScreen() {
           )}
         </ScrollView>
       )}
-      {expandedPhoto && (
+      {expandedPhotoIndex !== null && selectedStandData && (
         <View
           style={{
             position: "absolute",
@@ -314,7 +316,7 @@ export default function HomeScreen() {
           }}
         >
           <Pressable
-            onPress={() => setExpandedPhoto(null)}
+            onPress={() => setExpandedPhotoIndex(null)}
             style={{
               position: "absolute",
               top: 50,
@@ -333,14 +335,36 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
 
-          <Image
-            source={{ uri: expandedPhoto }}
-            style={{
-              width: "95%",
-              height: "80%",
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            contentOffset={{
+              x: expandedPhotoIndex * 360,
+              y: 0,
             }}
-            resizeMode="contain"
-          />
+            style={{ width: "100%" }}
+          >
+            {selectedStandData.photos.map((photo, index) => (
+              <View
+                key={`${photo}-${index}`}
+                style={{
+                  width: 360,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={{ uri: photo }}
+                  style={{
+                    width: "95%",
+                    height: "80%",
+                  }}
+                  resizeMode="contain"
+                />
+              </View>
+            ))}
+          </ScrollView>
         </View>
       )}
     </View>
