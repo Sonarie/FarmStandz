@@ -76,30 +76,7 @@ export default function HomeScreen() {
     checkLocation();
   }, []);
 
-  const takePhoto = async () => {
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (!permission.granted) {
-      Alert.alert(
-        "Camera permission needed",
-        "Roadside Standz needs camera access to take a photo.",
-      );
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setStandPhotos((currentPhotos) => [
-        ...currentPhotos,
-        result.assets[0].uri,
-      ]);
-    }
-  };
-
-  // ====================
+    // ====================
   // Reset Add Stand Form
   // ====================
 
