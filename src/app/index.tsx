@@ -2,14 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  View
-} from "react-native";
+import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
 import { PantryDetails } from "../components/addStand/PantryDetails";
@@ -107,6 +100,37 @@ export default function HomeScreen() {
   };
 
   // ====================
+  // Reset Add Stand Form
+  // ====================
+
+  const resetAddStandForm = () => {
+    // Reset shared stand information
+    setStandPhotos([]);
+    setSelectedCategories([]);
+    setShowDetails(false);
+    setShowAddForm(false);
+    setNewStandLocation(null);
+
+    // Reset Produce
+    setSelectedProduce([]);
+    setCustomProduceItems([]);
+    setShowOtherProduce(false);
+    setOtherProduce("");
+
+    // Reset Bakery
+    setSelectedBakery([]);
+    setCustomBakeryItems([]);
+    setShowOtherBakery(false);
+    setOtherBakery("");
+
+    // Reset Pantry
+    setSelectedPantry([]);
+    setCustomPantryItems([]);
+    setShowOtherPantry(false);
+    setOtherPantry("");
+  };
+
+  // ====================
   // Save Stand
   // ====================
 
@@ -116,7 +140,6 @@ export default function HomeScreen() {
     const baseLatitude = location?.coords.latitude ?? 44.9778;
     const baseLongitude = location?.coords.longitude ?? -93.265;
 
-    // Build inventory from the selected categories
     const inventory: string[] = [];
 
     if (selectedCategories.includes("Produce")) {
@@ -147,30 +170,7 @@ export default function HomeScreen() {
 
     setMapStands((currentStands) => [...currentStands, newStand]);
 
-    // Reset shared stand information
-    setStandPhotos([]);
-    setSelectedCategories([]);
-    setShowDetails(false);
-    setShowAddForm(false);
-    setNewStandLocation(null);
-
-    // Reset Produce
-    setSelectedProduce([]);
-    setCustomProduceItems([]);
-    setShowOtherProduce(false);
-    setOtherProduce("");
-
-    // Reset Bakery
-    setSelectedBakery([]);
-    setCustomBakeryItems([]);
-    setShowOtherBakery(false);
-    setOtherBakery("");
-
-    // Reset Pantry
-    setSelectedPantry([]);
-    setCustomPantryItems([]);
-    setShowOtherPantry(false);
-    setOtherPantry("");
+    resetAddStandForm();
   };
 
   return (
@@ -238,18 +238,7 @@ export default function HomeScreen() {
           style={styles.addForm}
           contentContainerStyle={{ paddingBottom: 40 }}
         >
-          <Pressable
-            style={styles.closeButton}
-            onPress={() => {
-              setSelectedCategories([]);
-              setSelectedProduce([]);
-              setShowOtherProduce(false);
-              setOtherProduce("");
-              setCustomProduceItems([]);
-              setShowDetails(false);
-              setShowAddForm(false);
-            }}
-          >
+          <Pressable style={styles.closeButton} onPress={resetAddStandForm}>
             <Text style={styles.closeButtonText}>×</Text>
           </Pressable>
           {!showDetails && (
