@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { CategorySelection } from "../components/addStand/CategorySelection";
 import { stands } from "../data/stands";
 import { styles } from "../styles/mapStyles";
 
@@ -250,95 +251,13 @@ export default function HomeScreen() {
             <Text style={styles.closeButtonText}>×</Text>
           </Pressable>
           {!showDetails && (
-            <>
-              <Text style={styles.addFormTitle}>
-                What kind of stand is this?
-              </Text>
-
-              {categories.map((category) => {
-                const isSelected = selectedCategories.includes(category);
-
-                return (
-                  <Pressable
-                    key={category}
-                    style={styles.categoryOption}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSelectedCategories(
-                          selectedCategories.filter(
-                            (item) => item !== category,
-                          ),
-                        );
-                      } else {
-                        setSelectedCategories([
-                          ...selectedCategories,
-                          category,
-                        ]);
-                      }
-                    }}
-                  >
-                    <Text style={styles.checkbox}>
-                      {isSelected ? "✓" : "○"}
-                    </Text>
-                    <Text style={styles.categoryText}>{category}</Text>
-                  </Pressable>
-                );
-              })}
-
-              {selectedCategories.length > 0 && (
-                <>
-                  <Pressable
-                    onPress={() => {
-                      setShowDetails(true);
-                    }}
-                  >
-                    <Text style={styles.detailsText}>+ Add more details</Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => {
-                      if (!newStandLocation) return;
-
-                      const baseLatitude = location?.coords.latitude ?? 44.9778;
-                      const baseLongitude =
-                        location?.coords.longitude ?? -93.265;
-
-                      const newStand = {
-                        id: `stand-${Date.now()}`,
-                        name: "Produce Stand",
-                        category: selectedCategories.join(", "),
-                        description:
-                          selectedProduce.length > 0
-                            ? selectedProduce.join(", ")
-                            : "No items listed yet",
-                        coordinates: {
-                          latitudeOffset:
-                            newStandLocation.latitude - baseLatitude,
-                          longitudeOffset:
-                            newStandLocation.longitude - baseLongitude,
-                        },
-                      };
-
-                      setMapStands((currentStands) => [
-                        ...currentStands,
-                        newStand,
-                      ]);
-                      setStandPhotos([]);
-                      setSelectedCategories([]);
-                      setSelectedProduce([]);
-                      setCustomProduceItems([]);
-                      setShowOtherProduce(false);
-                      setOtherProduce("");
-                      setShowDetails(false);
-                      setShowAddForm(false);
-                      setNewStandLocation(null);
-                    }}
-                  >
-                    <Text style={styles.addText}>Save Stand</Text>
-                  </Pressable>
-                </>
-              )}
-            </>
+            <CategorySelection
+              categories={categories}
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              onAddDetails={() => setShowDetails(true)}
+              onSave={saveStand}
+            />
           )}
           {showDetails && selectedCategories.includes("Produce") && (
             <View>
