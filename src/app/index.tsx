@@ -8,11 +8,11 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput,
-  View,
+  View
 } from "react-native";
 import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
+import { PantryDetails } from "../components/addStand/PantryDetails";
 import { ProduceDetails } from "../components/addStand/ProduceDetails";
 import { stands } from "../data/stands";
 import { styles } from "../styles/mapStyles";
@@ -288,94 +288,17 @@ export default function HomeScreen() {
             />
           )}
           {showDetails && selectedCategories.includes("Pantry") && (
-            <View>
-              <Text style={styles.detailsTitle}>
-                What pantry items are available?
-              </Text>
-
-              {pantryItems.map((item) => {
-                const isSelected = selectedPantry.includes(item);
-
-                return (
-                  <Pressable
-                    key={item}
-                    style={styles.categoryOption}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSelectedPantry(
-                          selectedPantry.filter(
-                            (pantryItem) => pantryItem !== item,
-                          ),
-                        );
-                      } else {
-                        setSelectedPantry([...selectedPantry, item]);
-                      }
-                    }}
-                  >
-                    <Text style={styles.checkbox}>
-                      {isSelected ? "✓" : "○"}
-                    </Text>
-                    <Text style={styles.categoryText}>{item}</Text>
-                  </Pressable>
-                );
-              })}
-
-              {customPantryItems.map((item) => {
-                const isSelected = selectedPantry.includes(item);
-
-                return (
-                  <Pressable
-                    key={item}
-                    style={styles.categoryOption}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSelectedPantry(
-                          selectedPantry.filter(
-                            (pantryItem) => pantryItem !== item,
-                          ),
-                        );
-                      } else {
-                        setSelectedPantry([...selectedPantry, item]);
-                      }
-                    }}
-                  >
-                    <Text style={styles.checkbox}>
-                      {isSelected ? "✓" : "○"}
-                    </Text>
-                    <Text style={styles.categoryText}>{item}</Text>
-                  </Pressable>
-                );
-              })}
-
-              {!showOtherPantry ? (
-                <Pressable
-                  onPress={() => {
-                    setShowOtherPantry(true);
-                  }}
-                >
-                  <Text style={styles.otherItemText}>+ Add another item</Text>
-                </Pressable>
-              ) : (
-                <TextInput
-                  style={styles.otherItemInput}
-                  placeholder="What else is available?"
-                  value={otherPantry}
-                  onChangeText={setOtherPantry}
-                  onSubmitEditing={() => {
-                    const newItem = otherPantry.trim();
-
-                    if (newItem) {
-                      setCustomPantryItems([...customPantryItems, newItem]);
-                      setSelectedPantry([...selectedPantry, newItem]);
-                    }
-
-                    setOtherPantry("");
-                    setShowOtherPantry(false);
-                  }}
-                  returnKeyType="done"
-                />
-              )}
-            </View>
+            <PantryDetails
+              pantryItems={pantryItems}
+              selectedPantry={selectedPantry}
+              setSelectedPantry={setSelectedPantry}
+              customPantryItems={customPantryItems}
+              setCustomPantryItems={setCustomPantryItems}
+              showOtherPantry={showOtherPantry}
+              setShowOtherPantry={setShowOtherPantry}
+              otherPantry={otherPantry}
+              setOtherPantry={setOtherPantry}
+            />
           )}
           {showDetails && (
             <View>
