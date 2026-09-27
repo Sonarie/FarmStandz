@@ -36,32 +36,31 @@ export function PhotoSection({
   const choosePhoto = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       quality: 0.8,
+      allowsMultipleSelection: true,
     });
 
     if (!result.canceled) {
-      setStandPhotos([...standPhotos, result.assets[0].uri]);
+      const newPhotos = result.assets.map((asset) => asset.uri);
+
+      setStandPhotos([...standPhotos, ...newPhotos]);
     }
   };
 
   const showPhotoOptions = () => {
-    Alert.alert(
-      "Add photos",
-      "How would you like to add a photo?",
-      [
-        {
-          text: "Take Photo",
-          onPress: takePhoto,
-        },
-        {
-          text: "Choose from Library",
-          onPress: choosePhoto,
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ],
-    );
+    Alert.alert("Add photos", "How would you like to add a photo?", [
+      {
+        text: "Take Photo",
+        onPress: takePhoto,
+      },
+      {
+        text: "Choose from Library",
+        onPress: choosePhoto,
+      },
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+    ]);
   };
 
   return (
