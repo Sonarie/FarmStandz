@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { BakeryDetails } from "../components/addStand/BakeryDetails";
 import { CategorySelection } from "../components/addStand/CategorySelection";
 import { ProduceDetails } from "../components/addStand/ProduceDetails";
 import { stands } from "../data/stands";
@@ -274,94 +275,17 @@ export default function HomeScreen() {
             />
           )}
           {showDetails && selectedCategories.includes("Bakery") && (
-            <View>
-              <Text style={styles.detailsTitle}>
-                What bakery items are available?
-              </Text>
-
-              {bakeryItems.map((item) => {
-                const isSelected = selectedBakery.includes(item);
-
-                return (
-                  <Pressable
-                    key={item}
-                    style={styles.categoryOption}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSelectedBakery(
-                          selectedBakery.filter(
-                            (bakeryItem) => bakeryItem !== item,
-                          ),
-                        );
-                      } else {
-                        setSelectedBakery([...selectedBakery, item]);
-                      }
-                    }}
-                  >
-                    <Text style={styles.checkbox}>
-                      {isSelected ? "✓" : "○"}
-                    </Text>
-                    <Text style={styles.categoryText}>{item}</Text>
-                  </Pressable>
-                );
-              })}
-
-              {customBakeryItems.map((item) => {
-                const isSelected = selectedBakery.includes(item);
-
-                return (
-                  <Pressable
-                    key={item}
-                    style={styles.categoryOption}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSelectedBakery(
-                          selectedBakery.filter(
-                            (bakeryItem) => bakeryItem !== item,
-                          ),
-                        );
-                      } else {
-                        setSelectedBakery([...selectedBakery, item]);
-                      }
-                    }}
-                  >
-                    <Text style={styles.checkbox}>
-                      {isSelected ? "✓" : "○"}
-                    </Text>
-                    <Text style={styles.categoryText}>{item}</Text>
-                  </Pressable>
-                );
-              })}
-
-              {!showOtherBakery ? (
-                <Pressable
-                  onPress={() => {
-                    setShowOtherBakery(true);
-                  }}
-                >
-                  <Text style={styles.otherItemText}>+ Add another item</Text>
-                </Pressable>
-              ) : (
-                <TextInput
-                  style={styles.otherItemInput}
-                  placeholder="What else is available?"
-                  value={otherBakery}
-                  onChangeText={setOtherBakery}
-                  onSubmitEditing={() => {
-                    const newItem = otherBakery.trim();
-
-                    if (newItem) {
-                      setCustomBakeryItems([...customBakeryItems, newItem]);
-                      setSelectedBakery([...selectedBakery, newItem]);
-                    }
-
-                    setOtherBakery("");
-                    setShowOtherBakery(false);
-                  }}
-                  returnKeyType="done"
-                />
-              )}
-            </View>
+            <BakeryDetails
+              bakeryItems={bakeryItems}
+              selectedBakery={selectedBakery}
+              setSelectedBakery={setSelectedBakery}
+              customBakeryItems={customBakeryItems}
+              setCustomBakeryItems={setCustomBakeryItems}
+              showOtherBakery={showOtherBakery}
+              setShowOtherBakery={setShowOtherBakery}
+              otherBakery={otherBakery}
+              setOtherBakery={setOtherBakery}
+            />
           )}
           {showDetails && selectedCategories.includes("Pantry") && (
             <View>
