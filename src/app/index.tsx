@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { CategorySelection } from "../components/addStand/CategorySelection";
+import { ProduceDetails } from "../components/addStand/ProduceDetails";
 import { stands } from "../data/stands";
 import { styles } from "../styles/mapStyles";
 
@@ -260,91 +261,17 @@ export default function HomeScreen() {
             />
           )}
           {showDetails && selectedCategories.includes("Produce") && (
-            <View>
-              <Text style={styles.detailsTitle}>
-                What produce is available?
-              </Text>
-
-              {produceItems.map((item) => {
-                const isSelected = selectedProduce.includes(item);
-
-                return (
-                  <Pressable
-                    key={item}
-                    style={styles.categoryOption}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSelectedProduce(
-                          selectedProduce.filter((produce) => produce !== item),
-                        );
-                      } else {
-                        setSelectedProduce([...selectedProduce, item]);
-                      }
-                    }}
-                  >
-                    <Text style={styles.checkbox}>
-                      {isSelected ? "✓" : "○"}
-                    </Text>
-                    <Text style={styles.categoryText}>{item}</Text>
-                  </Pressable>
-                );
-              })}
-
-              {!showOtherProduce ? (
-                <Pressable
-                  onPress={() => {
-                    setShowOtherProduce(true);
-                  }}
-                >
-                  {customProduceItems.map((item) => {
-                    const isSelected = selectedProduce.includes(item);
-
-                    return (
-                      <Pressable
-                        key={item}
-                        style={styles.categoryOption}
-                        onPress={() => {
-                          if (isSelected) {
-                            setSelectedProduce(
-                              selectedProduce.filter(
-                                (produce) => produce !== item,
-                              ),
-                            );
-                          } else {
-                            setSelectedProduce([...selectedProduce, item]);
-                          }
-                        }}
-                      >
-                        <Text style={styles.checkbox}>
-                          {isSelected ? "✓" : "○"}
-                        </Text>
-                        <Text style={styles.categoryText}>{item}</Text>
-                      </Pressable>
-                    );
-                  })}
-                  <Text style={styles.otherItemText}>+ Add another item</Text>
-                </Pressable>
-              ) : (
-                <TextInput
-                  style={styles.otherItemInput}
-                  placeholder="What else is available?"
-                  value={otherProduce}
-                  onChangeText={setOtherProduce}
-                  onSubmitEditing={() => {
-                    const newItem = otherProduce.trim();
-
-                    if (newItem) {
-                      setCustomProduceItems([...customProduceItems, newItem]);
-                      setSelectedProduce([...selectedProduce, newItem]);
-                    }
-
-                    setOtherProduce("");
-                    setShowOtherProduce(false);
-                  }}
-                  returnKeyType="done"
-                />
-              )}
-            </View>
+            <ProduceDetails
+              produceItems={produceItems}
+              selectedProduce={selectedProduce}
+              setSelectedProduce={setSelectedProduce}
+              customProduceItems={customProduceItems}
+              setCustomProduceItems={setCustomProduceItems}
+              showOtherProduce={showOtherProduce}
+              setShowOtherProduce={setShowOtherProduce}
+              otherProduce={otherProduce}
+              setOtherProduce={setOtherProduce}
+            />
           )}
           {showDetails && selectedCategories.includes("Bakery") && (
             <View>
