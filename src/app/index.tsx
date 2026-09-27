@@ -60,6 +60,7 @@ export default function HomeScreen() {
   const [otherPantry, setOtherPantry] = useState("");
   const [customPantryItems, setCustomPantryItems] = useState<string[]>([]);
   const [standPhotos, setStandPhotos] = useState<string[]>([]);
+  const [expandedPhoto, setExpandedPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     async function checkLocation() {
@@ -213,17 +214,21 @@ export default function HomeScreen() {
           {selectedStandData.photos?.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {selectedStandData.photos.map((photo, index) => (
-                <Image
+                <Pressable
                   key={`${photo}-${index}`}
-                  source={{ uri: photo }}
-                  style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 8,
-                    marginTop: 10,
-                    marginRight: 10,
-                  }}
-                />
+                  onPress={() => setExpandedPhoto(photo)}
+                >
+                  <Image
+                    source={{ uri: photo }}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 8,
+                      marginTop: 10,
+                      marginRight: 10,
+                    }}
+                  />
+                </Pressable>
               ))}
             </ScrollView>
           )}
@@ -293,6 +298,50 @@ export default function HomeScreen() {
             />
           )}
         </ScrollView>
+      )}
+      {expandedPhoto && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <Pressable
+            onPress={() => setExpandedPhoto(null)}
+            style={{
+              position: "absolute",
+              top: 50,
+              right: 25,
+              zIndex: 1001,
+              padding: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 36,
+              }}
+            >
+              ×
+            </Text>
+          </Pressable>
+
+          <Image
+            source={{ uri: expandedPhoto }}
+            style={{
+              width: "95%",
+              height: "80%",
+            }}
+            resizeMode="contain"
+          />
+        </View>
       )}
     </View>
   );
